@@ -1,1 +1,213 @@
 
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>まなビレッジ</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f3f7;
+    }
+
+    header {
+      background: linear-gradient(135deg, #6a11cb, #a4508b);
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      font-size: 1rem;
+      color: #6a11cb;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: 0.3s;
+    }
+
+    nav button.active {
+      border-bottom: 3px solid #6a11cb;
+      font-weight: bold;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    article {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      position: relative;
+    }
+
+    .list-btn {
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
+      background: linear-gradient(135deg, #6a11cb, #a4508b);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+    }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      backdrop-filter: blur(6px);
+      background: rgba(0,0,0,0.4);
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-backdrop.active {
+      display: block;
+      opacity: 1;
+    }
+
+    .modal {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 90%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      cursor: pointer;
+      color: #666;
+    }
+
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <header>まなビレッジ</header>
+
+  <nav>
+    <button class="active" data-section="learning">学習</button>
+    <button data-section="community">交流</button>
+  </nav>
+
+  <main>
+    <section id="learning">
+      <article>
+        <h2>英語リーディング練習</h2>
+        <p>リーディング力を鍛える教材です。</p>
+        <button class="list-btn">内容一覧</button>
+      </article>
+    </section>
+
+    <section id="community" style="display:none;">
+      <article>
+        <h2>交流セッション</h2>
+        <p>参加者同士で話す練習です。</p>
+        <button class="list-btn">内容一覧</button>
+      </article>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="modal-backdrop">
+    <div class="modal">
+      <button class="close-btn" id="close-modal">×</button>
+      <h3>動画</h3>
+      <div class="video-wrapper" id="video-wrapper"></div>
+    </div>
+  </div>
+
+  <script>
+    const navBtns = document.querySelectorAll('nav button');
+    navBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        navBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const section = btn.dataset.section;
+        document.querySelectorAll('main section').forEach(sec => {
+          sec.style.display = sec.id === section ? 'block' : 'none';
+        });
+      });
+    });
+
+    const backdrop = document.getElementById('modal-backdrop');
+    const videoWrapper = document.getElementById('video-wrapper');
+    const closeModal = document.getElementById('close-modal');
+
+    document.querySelectorAll('.list-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        videoWrapper.innerHTML = `
+          <iframe width="560" height="315"
+  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+  title="YouTube video player"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen>
+</iframe>
+
+        `;
+        backdrop.classList.add('active');
+      });
+    });
+
+    closeModal.addEventListener('click', () => {
+      backdrop.classList.remove('active');
+      videoWrapper.innerHTML = '';
+    });
+
+    backdrop.addEventListener('click', (e) => {
+      if (e.target === backdrop) {
+        backdrop.classList.remove('active');
+        videoWrapper.innerHTML = '';
+      }
+    });
+  </script>
+</body>
+</html>
