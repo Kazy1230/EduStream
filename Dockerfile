@@ -1,20 +1,21 @@
+# ベースイメージとして軽量なNginxを使用
 FROM nginx:stable-alpine
 
-# 作業ディレクトリは静的ファイルを置く場所
+# 作業ディレクトリはNginxのデフォルトの静的ファイル格納場所
 WORKDIR /usr/share/nginx/html
 
-# デフォルトのnginx設定ファイルを削除し、カスタム設定ファイルをコピー
-# まず、コンテナ内のデフォルト設定ファイルを削除 (またはバックアップ)
+# 既存のデフォルト設定ファイルを削除
 RUN rm /etc/nginx/conf.d/default.conf
-# カスタムのnginx.confファイルをコンテナの適切な場所にコピー
+
+# カスタムのnginx.confをコンテナの設定ディレクトリにコピー
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# アプリケーションの静的ファイルをNginxの公開ディレクトリにコピー
+# プロジェクトの静的ファイル（index.htmlなど）を公開ディレクトリにコピー
 COPY . /usr/share/nginx/html
 
-# ポートの公開（Nginxがこのポートでリッスンすると示す）
+# Cloud Runが期待するポート8080を公開することを宣言
 EXPOSE 8080
-# ここを8080に合わせる
 
-# コンテナ起動コマンド（Nginxのデフォルトで問題なし）
-CMD ["nginx", "-g", "daemon off;"]
+# コンテナ起動コマンド：起動前に設定ファイル構文チェックを実行
+# 設定に問題なければNginxをフォアグラウンドで起動
+CMD ["/bin/sh", "-c", "nginx -t && nginx -g 'daemon off;'"]
